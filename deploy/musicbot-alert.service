@@ -1,0 +1,10 @@
+[Unit]
+Description=Avisa num webhook do Discord quando o musicbot.service esgota as tentativas de reinício
+# Intencionalmente não tem OnFailure próprio: se o alerta falhar, ele não
+# deve tentar se auto-alertar.
+
+[Service]
+Type=oneshot
+ExecStart=/opt/musicbot/deploy/alert_webhook.sh
+User=musicbot
+Group=musicbot

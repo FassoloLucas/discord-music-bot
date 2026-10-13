@@ -1,0 +1,32 @@
+[Unit]
+Description=Discord Music Bot
+After=network-online.target warp-svc.service
+Wants=network-online.target
+# Depois de StartLimitBurst falhas dentro de StartLimitIntervalSec, o
+# systemd desiste de reiniciar sozinho (unidade fica "failed") e dispara
+# o alerta abaixo em vez de ficar reiniciando pra sempre em silêncio.
+# Configure ALERT_WEBHOOK_URL no .env pra receber o aviso no Discord.
+StartLimitIntervalSec=600
+StartLimitBurst=5
+OnFailure=musicbot-alert.service
+
+[Service]
+Type=simple
+User=musicbot
+Group=musicbot
+WorkingDirectory=/opt/musicbot
+EnvironmentFile=/opt/musicbot/.env
+ExecStart=/opt/musicbot/venv/bin/python /opt/musicbot/bot.py
+Restart=on-failure
+RestartSec=5
+# Evita que o bot derrube a VPS inteira se vazar memória
+MemoryMax=400M
+
+# Hardening básico
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
